@@ -63,8 +63,7 @@ export function generator(count: number): any {
       ownersArray.push(owner)
     }
 
-    dispatch(stationActions.reset())
-    dispatch(stationActions.updateAll(catsArray, ownersArray))
+    dispatch(stationActions.prepareSearch(catsArray, ownersArray))
     dispatch(lifecycle.startSearch())
     dispatch(stationActions.evaluateState())
   }

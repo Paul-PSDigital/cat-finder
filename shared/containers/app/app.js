@@ -1,11 +1,11 @@
-import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import React, { Component, PropTypes } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import { StationUI} from 'components/stationui'
 import * as loaders from 'actions/loader'
 import * as stationActions from 'modules/stations/reducer'
 
-import './app.scss';
+import './app.scss'
 
 class App extends Component {
 
@@ -30,7 +30,7 @@ class App extends Component {
   }
 
   render () {
-    const { state, dispatch, children } = this.props;
+    const { state, dispatch, children } = this.props
     var styles = {
       top: {
         margin: '12px'
@@ -84,12 +84,12 @@ class App extends Component {
         </div>
         {children && React.cloneElement(children, { state, dispatch })}
       </div>
-    );
+    )
   }
 }
 
 function mapStateToProps (state) {
-  return { state };
+  return { state }
 }
 
-export default connect(mapStateToProps)(App);
+export default connect(mapStateToProps)(App)

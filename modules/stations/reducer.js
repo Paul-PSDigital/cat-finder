@@ -1,9 +1,8 @@
 import * as lifecycle from 'modules/lifecycle/reducer'
 
 export const STATIONS_LOADED = 'STATIONS_LOADED'
-export const UPDATED_ALL = 'UPDATED_ALL'
+export const PREPARE_SEARCH = 'PREPARE_SEARCH'
 export const FOUND_CAT   = 'FOUND_CAT'
-export const RESET       = 'RESET'
 
 var initialState = {
   stations: [],
@@ -14,10 +13,11 @@ var initialState = {
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
-    case UPDATED_ALL:
+    case PREPARE_SEARCH:
       return Object.assign({}, state, {
         cats: action.cats,
-        catOwners: action.catOwners
+        catOwners: action.catOwners,
+        foundCats: []
       })
     case FOUND_CAT:
       return Object.assign({}, state, {
@@ -25,20 +25,8 @@ export default function reducer(state = initialState, action) {
       })
     case STATIONS_LOADED:
       return Object.assign({}, state, {stations: action.stations})
-    case RESET:
-      return Object.assign({}, state, {
-        foundCats: initialState.foundCats,
-        cats: initialState.cats,
-        catOwners: initialState.catOwners
-      })
     default:
-      return state;
-  }
-}
-
-export function reset(): Redux.Action {
-  return {
-    type: RESET
+      return state
   }
 }
 
@@ -49,9 +37,9 @@ export function stationsLoaded(stations): Redux.Action {
   }
 }
 
-export function updateAll(cats, catOwners): Redux.Action {
+export function prepareSearch(cats, catOwners): Redux.Action {
   return {
-    type: UPDATED_ALL,
+    type: PREPARE_SEARCH,
     cats,
     catOwners
   }

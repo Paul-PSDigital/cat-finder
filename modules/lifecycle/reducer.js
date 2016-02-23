@@ -15,22 +15,22 @@ export default function reducer(state = initialState, action) {
     case STOP:
       return Object.assign({}, state, {running: false})
     case NEXT_MOVE:
-      return Object.assign({}, state, {currentCount: state.currentCount + 1});
+      return Object.assign({}, state, {currentCount: state.currentCount + 1})
     default:
-      return state;
+      return state
   }
 }
 
 export function startSearch() {
   return {
     type: START
-  };
+  }
 }
 
 export function stopSearch() {
   return {
     type: STOP
-  };
+  }
 }
 
 /**
@@ -39,5 +39,5 @@ export function stopSearch() {
 export function nextMove() {
   return {
     type: NEXT_MOVE
-  };
+  }
 }

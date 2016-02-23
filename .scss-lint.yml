@@ -1,0 +1,11 @@
+scss_files: '{shared,routes}/**/*.scss'
+
+linters:
+  PropertySortOrder:
+    enabled: true
+  # We use important to override bootstrap from CSS modules which seems a legit use
+  ImportantRule:
+    enabled: false
+  # This one just seems silly
+  LeadingZero:
+    enabled: false

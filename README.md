@@ -12,7 +12,3 @@ Go to:
 http://localhost:8080
 
 Enter the number of cats you want to start with and go from there!
-
-TODO:
-- Abstractions and interfaces
-- Tests
