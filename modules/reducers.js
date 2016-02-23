@@ -1,7 +1,7 @@
 import { default as stations } from './stations/reducer';
-import { default as mcts } from './mcts/reducer';
+import { default as lifecycle } from './lifecycle/reducer';
 
 export {
   stations,
-  mcts
+  lifecycle
 };

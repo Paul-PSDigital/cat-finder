@@ -7,19 +7,19 @@ export class CatOwner {
   stationHistory: Station[] = []
   isStuck: boolean = false
 
-  constructor(cat: Cat, station) {
+  constructor(cat: Cat, station): void {
     this.setCat(cat)
     this.setStation(station)
 
     cat.setOwner = this
   }
 
-  setCat (cat: Cat) : any {
+  setCat(cat: Cat): CatOwner {
     this.cat = cat
     return this
   }
 
-  setStation (station: Station) {
+  setStation(station: Station): CatOwner {
     this.station = station
 
     // Remember visiting this station

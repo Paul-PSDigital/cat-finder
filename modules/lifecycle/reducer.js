@@ -3,18 +3,19 @@ export const START     = 'START'
 export const STOP      = 'STOP'
 
 var initialState = {
-  remainingCount: 100000,
+  currentCount: 0,
+  maxCount: 100000,
   running: false
 }
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
     case START:
-      return Object.assign({}, state, {running: true, remainingCount: initialState.remainingCount})
+      return Object.assign({}, state, {running: true, currentCount: initialState.currentCount})
     case STOP:
       return Object.assign({}, state, {running: false})
     case NEXT_MOVE:
-      return Object.assign({}, state, {remainingCount: state.remainingCount - 1});
+      return Object.assign({}, state, {currentCount: state.currentCount + 1});
     default:
       return state;
   }

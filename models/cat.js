@@ -11,7 +11,7 @@ export class Cat {
     this.setStation(station)
   }
 
-  setStation (station: Station) {
+  setStation(station: Station): Cat {
     this.station = station
     return this
   }

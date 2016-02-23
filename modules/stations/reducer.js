@@ -1,12 +1,15 @@
-import * as mcts from 'modules/mcts/reducer'
+import * as lifecycle from 'modules/lifecycle/reducer'
 
 export const STATIONS_LOADED = 'STATIONS_LOADED'
 export const UPDATED_ALL = 'UPDATED_ALL'
+export const FOUND_CAT   = 'FOUND_CAT'
+export const RESET       = 'RESET'
 
 var initialState = {
   stations: [],
   cats: [],
-  catOwners: []
+  catOwners: [],
+  foundCats: []
 }
 
 export default function reducer(state = initialState, action) {
@@ -16,21 +19,37 @@ export default function reducer(state = initialState, action) {
         cats: action.cats,
         catOwners: action.catOwners
       })
+    case FOUND_CAT:
+      return Object.assign({}, state, {
+        foundCats: state.foundCats.concat(action.cat)
+      })
     case STATIONS_LOADED:
       return Object.assign({}, state, {stations: action.stations})
+    case RESET:
+      return Object.assign({}, state, {
+        foundCats: initialState.foundCats,
+        cats: initialState.cats,
+        catOwners: initialState.catOwners
+      })
     default:
       return state;
   }
 }
 
-export function stationsLoaded(stations) {
+export function reset(): Redux.Action {
+  return {
+    type: RESET
+  }
+}
+
+export function stationsLoaded(stations): Redux.Action {
   return {
     type: STATIONS_LOADED,
     stations
   }
 }
 
-export function updateAll(cats, catOwners) {
+export function updateAll(cats, catOwners): Redux.Action {
   return {
     type: UPDATED_ALL,
     cats,
@@ -38,52 +57,48 @@ export function updateAll(cats, catOwners) {
   }
 }
 
+function catFound(cat: Cat): Redux.Action {
+  return {
+    type: FOUND_CAT,
+    cat
+  }
+}
 /**
 * Evaluate if there are any winners
 */
 export function evaluateState() {
-  return (dispatch: Redux.Dispatch, getState: () => any) => {
-    var state = getState();
-    var stationState = state.stations
+  return (dispatch: Redux.Dispatch, getState: () => State) => {
+    var owners = getState().stations.catOwners.filter((catOwner) => !catOwner.cat.isFound)
 
-    state.stations.catOwners.forEach((catOwner) => {
+    owners.forEach((catOwner) => {
       if (catOwner.station.stationId === catOwner.cat.station.stationId) {
         catOwner.cat.isFound = true
         catOwner.station.isOpen = false
+        dispatch(catFound(catOwner.cat))
       }
     })
 
-    if ((state.mcts.remainingCount > 0) && (state.stations.cats.filter(cat => !cat.isFound).length > 0)) {
-      dispatch(moveStations())
-      dispatch(mcts.nextMove())
+    var state = getState()
+
+    // Continue looking?
+    if ((state.lifecycle.currentCount < state.lifecycle.maxCount) &&
+    (state.stations.foundCats.length < state.stations.cats.length)) {
+      dispatch(lifecycle.nextMove())
+      return moveStations(owners.filter((catOwner) => !(catOwner.isStuck || (catOwner.cat.isStuck || catOwner.cat.isFound))))
     } else {
-      dispatch(updateAll(state.stations.cats, state.stations.catOwners))
-      dispatch(mcts.stopSearch())
+      // Completed
+      dispatch(lifecycle.stopSearch())
     }
   }
 }
 
-export function moveStations() {
-  return (dispatch: Redux.Dispatch, getState: () => any) => {
-    var state = getState().stations
-
-    var cats = state.cats.filter((cat) => !cat.isFound)
-    var catOwners = state.catOwners.filter((catOwner) => !catOwner.cat.isFound)
-
-    cats.forEach((cat) => cat.selectNextStation())
-    catOwners.forEach((catOwner) => catOwner.selectNextStation())
-
-    dispatch(updateAll(cats.filter((cat) => !cat.isStuck), catOwners.filter((catOwner) => !catOwner.isStuck)))
-
-    if (cats.filter((cat) => cat.isStuck).length === cats.length) {
-      dispatch(mcts.stopSearch())
-    }
-
-    if (catOwners.filter((catOwner) => catOwner.isStuck).length === catOwners.length) {
-      dispatch(mcts.stopSearch())
-    }
-    setTimeout(function() {
-      dispatch(evaluateState())
-    }, 0.1)
-  }
+/**
+* Move the cats and their owners to new stations
+*/
+function moveStations(catOwners) {
+  catOwners.forEach((catOwner) => {
+    catOwner.selectNextStation()
+    catOwner.cat.selectNextStation()
+  })
+  return catOwners
 }
