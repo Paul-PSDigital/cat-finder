@@ -4,7 +4,6 @@ import {
   compose
 } from 'redux';
 
-import thunk from 'redux-thunk';
 import { devTools } from 'redux-devtools';
 import { reduxReactRouter } from 'redux-router';
 import createHistory from 'history/lib/createBrowserHistory';
@@ -15,7 +14,6 @@ import rootReducer from './reducers';
 const sagaMiddleware = createSagaMiddleware(mySaga)
 
 const createStoreWithMiddleware = compose(
-  applyMiddleware(thunk),
   applyMiddleware(sagaMiddleware),
   reduxReactRouter({ createHistory }),
   devTools()
