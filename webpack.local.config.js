@@ -5,6 +5,7 @@ var config = require('./webpack.config');
 
 config.devtool = 'cheap-module-eval-source-map';
 config.entry = [
+  'babel-polyfill',
   'webpack-hot-middleware/client',
   path.join(__dirname, 'index')
 ];

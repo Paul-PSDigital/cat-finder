@@ -12,6 +12,7 @@ module.exports = {
     alias: {
       // Allows `import example from 'modules/example';`
       'actions': path.join(__dirname, 'actions'),
+      'config': path.join(__dirname, 'config'),
       'models': path.join(__dirname, 'models'),
       'modules': path.join(__dirname, 'modules'),
 
@@ -34,8 +35,11 @@ module.exports = {
     loaders: [
       {
         test: /\.js$/,
-        loader: 'babel?stage=0', // enable ES7 experimental features
-        include: __dirname
+        loader: 'babel-loader', // enable ES7 experimental features
+        include: __dirname,
+        exclude: [
+          path.resolve(__dirname, "node_modules"),
+        ],
       },
       {
         test: /\.s?css$/,

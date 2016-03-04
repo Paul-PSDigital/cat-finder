@@ -8,11 +8,15 @@ import thunk from 'redux-thunk';
 import { devTools } from 'redux-devtools';
 import { reduxReactRouter } from 'redux-router';
 import createHistory from 'history/lib/createBrowserHistory';
+import createSagaMiddleware from 'redux-saga';
 
+import mySaga from './sagas'
 import rootReducer from './reducers';
+const sagaMiddleware = createSagaMiddleware(mySaga)
 
 const createStoreWithMiddleware = compose(
   applyMiddleware(thunk),
+  applyMiddleware(sagaMiddleware),
   reduxReactRouter({ createHistory }),
   devTools()
 )(createStore);

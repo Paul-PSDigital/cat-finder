@@ -1,6 +1,3 @@
-// Emulate an es6 environment
-import 'babel-core/polyfill';
-
 // Import our various react tools
 import React from 'react';
 import { render } from 'react-dom';

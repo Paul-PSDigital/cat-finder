@@ -2,31 +2,33 @@ import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { StationUI} from 'components/stationui'
-import * as loaders from 'actions/loader'
-import * as stationActions from 'modules/stations/reducer'
+import * as catFinderActions from 'modules/catFinder/reducer'
 
 import './app.scss'
 
 class App extends Component {
 
   componentDidMount() {
-    this.props.dispatch(loaders.getStations())
+    this.props.dispatch({type: catFinderActions.LOAD_STATIONS})
   }
 
-  componentDidUpdate() {
-    if (this.props.state.lifecycle.running) {
-      let that = this
-      setTimeout(function() {
-        that.props.dispatch(stationActions.evaluateState())
-      }, 0.1)
+  componentDidUpdate(prevProps, prevState) {
+    let counterChanged = prevProps.state.catFinder.currentCount !== this.props.state.catFinder.currentCount
+    let belowMax = this.props.state.catFinder.currentCount < this.props.state.catFinder.maxCount
+    if (this.props.state.catFinder.running && counterChanged && belowMax) {
+      this.props.dispatch({
+        type: catFinderActions.MOVE_STATIONS,
+        catOwners: this.props.state.catFinder.catOwners.filter((o) => { return !o.cat.isFound && !o.isStuck && !o.cat.isStuck})
+      })
     }
   }
 
   releaseCats(count) {
-    var catCount = this.refs.catCount.value
-    this.props.dispatch(loaders.generator(catCount))
-
-    var that = this
+    this.props.dispatch({
+      type: catFinderActions.START_SEARCH,
+      count: this.refs.catCount.value,
+      stations: this.props.state.catFinder.stations
+    })
   }
 
   render () {
@@ -50,28 +52,30 @@ class App extends Component {
     }
 
     var openStations = [], closedStations = []
-    state.stations.stations.forEach(station => {
+    state.catFinder.stations.forEach(station => {
       if (station.isOpen) {
-        openStations.push(<StationUI station={station} expand={true}/>)
+        openStations.push(<StationUI station={station} />)
       } else {
-        closedStations.push(<StationUI station={station} expand={false} />)
+        closedStations.push(<StationUI station={station} />)
       }
     })
     var countsComponent = null
 
-    if (this.refs.catCount && this.refs.catCount.value && state.stations.foundCats.length) {
+    if (state.catFinder.catOwners && state.catFinder.catOwners.length > 0) {
+      let foundCats = state.catFinder.foundCats.length
       countsComponent = <div>
-        <div>Total Number of Cats: {this.refs.catCount.value}</div>
-        <div>Number of cats found: {state.stations.foundCats.length}</div>
-        <div>Average number of movements required to find a cat: { Math.round(state.lifecycle.currentCount / state.stations.foundCats.length)}</div>
+        <div>Total Number of Cats: {state.catFinder.catOwners.length}</div>
+        <div>Number of cats found: {foundCats}</div>
+        <div>Average number of movements required to find a cat: { Math.round(state.catFinder.lastCatCounter / foundCats)}</div>
       </div>
     }
 
     return (
       <div>
         <div style={styles.top}>
-        Cats: <input type='number' ref='catCount' /><button onClick={this.releaseCats.bind(this)} disabled={state.lifecycle.running}>Release Cats</button>
-        <div>Current Move: {state.lifecycle.currentCount}</div>
+          Cats: <input type='number' ref='catCount' />
+          <button onClick={this.releaseCats.bind(this)} disabled={state.catFinder.running}>Release Cats</button>
+          <div>Current Move: {state.catFinder.currentCount}</div>
         </div>
         { countsComponent }
         <div style={styles.open}>

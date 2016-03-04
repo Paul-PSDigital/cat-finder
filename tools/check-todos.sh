@@ -1,1 +1,1 @@
-grep -e '.*TODO.*' --include \*.js\* -R {actions,config,models,modules,shared} | sed 's/^/WARNING: /'
+grep -e '.*TODO.*' --include \*.js\* -R {config,models,modules,shared} | sed 's/^/WARNING: /'
