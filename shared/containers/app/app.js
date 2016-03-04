@@ -66,7 +66,7 @@ class App extends Component {
       countsComponent = <div>
         <div>Total Number of Cats: {state.catFinder.catOwners.length}</div>
         <div>Number of cats found: {foundCats}</div>
-        <div>Average number of movements required to find a cat: { Math.round(state.catFinder.lastCatCounter / foundCats)}</div>
+        <div>Average number of movements required to find a cat: { foundCats && Math.round(state.catFinder.lastCatCounter / foundCats)}</div>
       </div>
     }
 
